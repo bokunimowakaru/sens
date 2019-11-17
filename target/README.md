@@ -1,4 +1,4 @@
-# 書込み方法とライセンス
+﻿# 書込み方法とライセンス
 
 ## 書込み方法  
 
@@ -8,7 +8,7 @@
 		ls -l /dev/serial/by-id/
 
 * 下記のコマンドを入力するとESP32へ書き込むことが出来ます(/dev/ttyUSB0の数字部分を、上記で確認したUSBシリアルのデバイスPathに置き換える)。  
-		cd ~/iot/iot-sensor-core-esp32/target  
+		cd ~/sens/target  
 		./iot-sensor-core-esp32.sh /dev/ttyUSB0  
 
 ## ライセンス esptool.py
