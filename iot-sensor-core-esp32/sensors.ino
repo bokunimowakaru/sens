@@ -58,7 +58,7 @@ const String sensors_PINOUT_S_TTGO_Koala[36] = {
 String sensors_PIN_ASSIGNED_S[38];
 
 /*
-DoIt	DevC	AE-ESP	TTGO	メモ	TTGO以外						TTGO_LCD
+DoIt	DevC	AE-ESP	TTGO	メモ	TTGO以外								TTGO_LCD
 IO36 i	IO36 i	IO36 i	IO36i
 IO39 i	IO39 i	IO39 i	IO39i
 IO34 i	IO34 i	IO34 i	IO32★	ADC
@@ -66,11 +66,11 @@ IO35 i	IO35 i	IO35 i	IO33★	ADC
 IO32	IO32	IO32	IO34 i	ADC				LUM/-
 IO33	IO33	IO33	IO35 i	ADC				LUM/O
 IO25	IO25	IO25	IO25	共通	PIR/+	LUM/+			BME/+
-IO26	IO26	IO26	IO26	共通	PIR/O	SHT/+	Si/+	BME/-	LCD/+
-IO27	IO27	IO27	IO27	共通	PIR/-	SHT/D	Si/-	BME/C	LCD/R
-IO14	IO14	IO14	IO14	共通	IR/+	SHT/C	Si/C	BME/D	LCD/C
-IO12	IO12	IO12	IO12	PDown★			SHT/A	Si/D	BME/A	LCD/D
-IO13	GND		GND		IO13	GND				SHT/-			BME/0	LCD/-
+IO26	IO26	IO26	IO26	共通	PIR/O	SHT/+	Si/+	BME/-	AM2320/+	LCD/+	
+IO27	IO27	IO27	IO27	共通	PIR/-	SHT/D	Si/-	BME/C	AM2320/D	LCD/R
+IO14	IO14	IO14	IO14	共通	IR/+	SHT/C	Si/C	BME/D	AM2320/-	LCD/C
+IO12	IO12	IO12	IO12	PDown★			SHT/A	Si/D	BME/A	AM2320/C	LCD/D
+IO13	GND		GND		IO13	GND				SHT/-			BME/0				LCD/-
 GND		IO13	IO13	5V
 --------------------------------------
 IO23	IO23	IO23
@@ -570,6 +570,18 @@ void _sensors_init_I2C_HUM_reset_pin(int mode){
 		sensors_pin_reset("IO12","Si7021_SDA");
 		sensors_pin_reset("IO26","Si7021_VIN");
 	}
+	if(mode != 3){
+		sensors_pin_reset("IO14","AM2320_GND");
+		sensors_pin_reset("IO12","AM2320_SCL");
+		sensors_pin_reset("IO27","AM2320_SDA");
+		sensors_pin_reset("IO26","AM2320_VIN");
+	}
+	if(mode != 4 && mode != 5){
+		sensors_pin_reset("IO12","DHT11/22_GND");
+		sensors_pin_reset("IO12","DHT11/22_NC");
+		sensors_pin_reset("IO27","DHT11/22_SDA");
+		sensors_pin_reset("IO26","DHT11/22_VIN");
+	}
 }
 
 boolean sensors_init_I2C_HUM(int mode){
@@ -614,6 +626,47 @@ boolean sensors_init_I2C_HUM(int mode){
 			pinMode(26,OUTPUT);	digitalWrite(26,HIGH);
 			if( i2c_si7021_Setup(12,14) ) sensors_WireBegin=true;
 			I2C_HUM_EN=2;
+		}else{
+			ret = false;		// ピン干渉
+			I2C_HUM_EN=0;
+		}
+	}
+	if( mode == 3){
+		/*	AM2320	ESP
+			VIN		IO26
+			SDA		IO27
+			GND		IO14
+			SCL		IO12
+		*/
+		if( sensors_pin_set("IO14","AM2320_GND") &&
+			sensors_pin_set("IO12","AM2320_SCL") &&
+			sensors_pin_set("IO27","AM2320_SDA") &&
+			sensors_pin_set("IO26","AM2320_VIN")
+		){	pinMode(14,OUTPUT);	digitalWrite(14,LOW);
+			pinMode(26,OUTPUT);	digitalWrite(26,HIGH);
+			if( i2c_am2320_Setup(27,12) ) sensors_WireBegin=true;
+			I2C_HUM_EN=3;
+		}else{
+			ret = false;		// ピン干渉
+			I2C_HUM_EN=0;
+		}
+	}
+	if( mode == 4 ||mode == 5){
+		/*	AM2302	ESP
+			VIN		IO26
+			SDA		IO27
+			NC		IO14
+			GND		IO12
+		*/
+		if( sensors_pin_set("IO12","DHT11/22_GND") &&
+			sensors_pin_set("IO14","DHT11/22_NC") &&
+			sensors_pin_set("IO27","DHT11/22_SDA") &&
+			sensors_pin_set("IO26","DHT11/22_VIN")
+		){	pinMode(12,OUTPUT);	digitalWrite(12,LOW);
+			pinMode(14,INPUT_PULLDOWN);
+			pinMode(27,INPUT);
+			pinMode(26,OUTPUT);	digitalWrite(26,HIGH);
+			if( i2c_dht_Setup( (6 - mode) * 11 )) I2C_HUM_EN = mode;
 		}else{
 			ret = false;		// ピン干渉
 			I2C_HUM_EN=0;
@@ -858,7 +911,7 @@ String sensors_get(){
 	}
 	if(AD_TEMP_EN>0){
 		float temp = mvAnalogIn(PIN_TEMP);
-		if( AD_TEMP_EN == 1){		// 1:LM61, 2:MCP9700
+		if( AD_TEMP_EN == 1){		// 1:LM61, 2:MCP9700, 3:AM2320, 4:AM2302, 5:DHT11
 			// V = 600 + 10*temp -> (temp-600)/10
 			temp /= 10.;                            // 温度(相対値)へ変換
 			temp += (float)TEMP_ADJ - 60.;             // 温度(相対値)へ変換
@@ -887,6 +940,15 @@ String sensors_get(){
 			if( !sensors_WireBegin && i2c_si7021_Setup(12,14) ) sensors_WireBegin=true;
 			temp = i2c_si7021_getTemp();
 			hum = i2c_si7021_getHum();
+		}
+		if( I2C_HUM_EN == 3){
+			if( !sensors_WireBegin && i2c_am2320_Setup(27,12) ) sensors_WireBegin=true;
+			temp = i2c_am2320_getTemp();
+			hum = i2c_am2320_getHum();
+		}
+		if( I2C_HUM_EN == 4 || I2C_HUM_EN == 5){
+			temp = i2c_dht_getTemp();
+			hum = i2c_dht_getHum();
 		}
 		String hum_S = dtoStrf(temp,1) + ", " + dtoStrf(hum,0);
 		Serial.print("humid      = ");

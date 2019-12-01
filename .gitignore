@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+*.BAK
+*.zip
+*.csv
+*.log
+

@@ -662,6 +662,10 @@ void html_sensors(){
 					<input type=\"radio\" name=\"I2C_HUM_EN\" value=\"0\" %s>OFF\
 					<input type=\"radio\" name=\"I2C_HUM_EN\" value=\"1\" %s>SHT31\
 					<input type=\"radio\" name=\"I2C_HUM_EN\" value=\"2\" %s>Si7021\
+					<p>　　　　　　　\
+					<input type=\"radio\" name=\"I2C_HUM_EN\" value=\"3\" %s>AM2320\
+					<input type=\"radio\" name=\"I2C_HUM_EN\" value=\"4\" %s>DHT22\
+					<input type=\"radio\" name=\"I2C_HUM_EN\" value=\"5\" %s>DHT11\
 					</p>\
 					<p>環境センサ　\
 					<input type=\"radio\" name=\"I2C_ENV_EN\" value=\"0\" %s>OFF\
@@ -695,6 +699,7 @@ void html_sensors(){
 				html_checked[AD_LUM_EN==0], html_checked[AD_LUM_EN==1],
 				html_checked[AD_TEMP_EN==0], html_checked[AD_TEMP_EN==1], html_checked[AD_TEMP_EN==2],
 				html_checked[I2C_HUM_EN==0], html_checked[I2C_HUM_EN==1], html_checked[I2C_HUM_EN==2],
+				html_checked[I2C_HUM_EN==3], html_checked[I2C_HUM_EN==4], html_checked[I2C_HUM_EN==5],
 				html_checked[I2C_ENV_EN==0], html_checked[I2C_ENV_EN==1], html_checked[I2C_ENV_EN==2],
 				html_checked[I2C_ACCEM_EN==0], html_checked[I2C_ACCEM_EN==1],
 				html_checked[TIMER_EN==0], html_checked[TIMER_EN==1]

@@ -83,6 +83,8 @@ Arduino IDEを使って、自分でコンパイルすることが出来ます。
 		esp32 by Espressif Systems  
 	ボード選択  
 		ESP32 Dev Module  
+	推奨コンパイル・オプション  
+		ソースコードiot-sensor-core-esp32.inoに記載
 
 「iot-sensor-core-esp32.ino」がメインのファイルです。PCのArduinoフォルダ内にiot-sensor-core-esp32フォルダ内を作成し、iot-sensor-core-esp32.inoを含むすべての.inoファイルをコピーし、Arduino IDEで開き、画面情報の右矢印「⇒」をクリックすると、コンパイルと、USB接続したESP32モジュールへのファームウェアを書き込みが実行されます。
 
@@ -123,8 +125,9 @@ Arduino IDEを使って、自分でコンパイルすることが出来ます。
 
 ## 初期設定値について
 
-* 電源を切る、またはESP32開発ボード上のENボタンを押すと、全ての設定が初期値に戻ります。
-* 初期値を変更したい場合は、本フォルダ内のソースコードiot-sensor-core-esp32.inoのRTC_DATA_ATTRから始まる行を変更し、Arduino IDEでコンパイルしてください。例えば、Wi-Fi STA接続先のSSIDはSSID_STA、パスワードはPASS_STAで設定することが出来ます。本機を廃棄するときは、SPIフラッシュの内容を消去してください。
+* 電源を切る、またはESP32開発ボード上のENボタンを押すと、全ての設定が初期値に戻ります（Wi-Fi設定で保存した項目を除く）。
+* 初期値を変更したい場合は、本フォルダ内のソースコードiot-sensor-core-esp32.inoのRTC_DATA_ATTRから始まる行を変更し、Arduino IDEでコンパイルしてください。例えば、Wi-Fi STA接続先のSSIDはSSID_STA、パスワードはPASS_STAで設定することが出来ます。
+* 本機を廃棄するときは、SPIフラッシュの内容を消去してください。ツール esptool.py を使用し、「esptool.py erase_flash」を実行すると消去することが出来ます。
 
 ## リリース履歴
 
