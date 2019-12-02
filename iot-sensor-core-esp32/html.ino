@@ -663,8 +663,8 @@ void html_sensors(){
 					<input type=\"radio\" name=\"I2C_HUM_EN\" value=\"1\" %s>SHT31\
 					<input type=\"radio\" name=\"I2C_HUM_EN\" value=\"2\" %s>Si7021\
 					<p>　　　　　　　\
-					<input type=\"radio\" name=\"I2C_HUM_EN\" value=\"3\" %s>AM2320\
-					<input type=\"radio\" name=\"I2C_HUM_EN\" value=\"4\" %s>DHT22\
+					<input type=\"radio\" name=\"I2C_HUM_EN\" value=\"3\" %s>AM23<u>20</u>\
+					<input type=\"radio\" name=\"I2C_HUM_EN\" value=\"4\" %s>AM23<u>02</u>\
 					<input type=\"radio\" name=\"I2C_HUM_EN\" value=\"5\" %s>DHT11\
 					</p>\
 					<p>環境センサ　\

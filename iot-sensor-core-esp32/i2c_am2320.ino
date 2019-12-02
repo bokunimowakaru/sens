@@ -1,14 +1,22 @@
 /*******************************************************************************
 I2C 温湿度センサ aosong AM2320
 
-本ソースリストおよびソフトウェアは、ライセンスフリーです。(詳細は別記)
-利用、編集、再配布等が自由に行えますが、著作権表示の改変は禁止します。
-
 I2C接続のセンサから測定値を取得する
 aosong AM2320
+
+本ソースリストおよびソフトウェアは、CRC演算部を除き、ライセンスフリーです。
+利用、編集、再配布等が自由に行えますが、著作権表示の改変は禁止します。
+(詳細は別記)
+
+※ CRC演算部はASONG社のAM2320 Product Manualに記載のコードを転用しています。
+　　該当関数：i2c_am2320_crc16
+
                                         Copyright (c) 2014-2019 Wataru KUNINO
-                                        https://bokunimo.net/raspi/
+                                        https://bokunimo.net/
 *******************************************************************************/
+/*                                        
+参考資料 ASONG Digital Temperature and Humidity Sensor AM2320 Product Manual
+*/
 
 #include <Wire.h> 
 
@@ -21,6 +29,23 @@ volatile float _i2c_am2320_temp = -999.0;
 // typedef unsigned char byte; 
 // int16_t temp,hum=-1;
 
+uint16_t i2c_am2320_crc16(unsigned char *ptr, unsigned char len){
+	unsigned short crc =0xFFFF;
+	unsigned char i;
+	while(len--){
+		crc ^=*ptr++;
+		for(i=0;i<8;i++){
+			if(crc & 0x01){
+				crc>>=1;
+				crc^=0xA001;
+			}else{
+				crc>>=1;
+			}
+		}
+	}
+	return crc;
+}
+
 float i2c_am2320_getTemp(){
     byte data[8],i;
     _i2c_am2320_hum = -999;
@@ -30,9 +55,11 @@ float i2c_am2320_getTemp(){
         Wire.beginTransmission(I2C_am2320);
     //  delay(20);
         if(Wire.endTransmission()==0) break;
-        Serial.println("retring beginTransmission for am2320");
-        if(i==7) return -999.;
-        delay(15 * powl(2,i));
+        if(i==7){
+            Serial.println("no response from am2320");
+            return -999.;
+        }
+        delay(15 * (1<<i));
     }
     
 //  Serial.println("endTransmission null");
@@ -46,7 +73,7 @@ float i2c_am2320_getTemp(){
     delay(1);
 //  Serial.println("endTransmission config");
     Wire.requestFrom(I2C_am2320,8);
-    for(i=0;i<6;i++){
+    for(i=0;i<8;i++){
         if(Wire.available()==0) return -999.;
         data[i]=Wire.read();
     }
@@ -67,6 +94,11 @@ float i2c_am2320_getTemp(){
     */
     _i2c_am2320_temp = (float)((((int16_t)data[4])<<8)+((int16_t)data[5])) / 10.;
     _i2c_am2320_hum  = (float)((((int16_t)data[2])<<8)+((int16_t)data[3])) / 10.;
+    
+    if( (((uint16_t)data[7])<<8) + (uint16_t)data[6] != i2c_am2320_crc16(data,6)){
+		Serial.println("CRC Error, am2320");
+		return -999.;
+	}
     return _i2c_am2320_temp;
 }
 

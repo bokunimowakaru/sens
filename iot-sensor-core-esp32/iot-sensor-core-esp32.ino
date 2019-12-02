@@ -16,7 +16,7 @@ IoT Sensor Core for ESP32
 	Core Debug Level: なし
 */
 
-#define  VERSION "1.00"							// バージョン表示
+#define  VERSION "1.01"							// バージョン表示
 
 #include <SPIFFS.h>
 #include <WiFi.h>								// ESP32用WiFiライブラリ

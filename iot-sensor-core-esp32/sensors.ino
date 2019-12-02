@@ -576,11 +576,17 @@ void _sensors_init_I2C_HUM_reset_pin(int mode){
 		sensors_pin_reset("IO27","AM2320_SDA");
 		sensors_pin_reset("IO26","AM2320_VIN");
 	}
-	if(mode != 4 && mode != 5){
-		sensors_pin_reset("IO12","DHT11/22_GND");
-		sensors_pin_reset("IO12","DHT11/22_NC");
-		sensors_pin_reset("IO27","DHT11/22_SDA");
-		sensors_pin_reset("IO26","DHT11/22_VIN");
+	if(mode != 4){
+		sensors_pin_reset("IO12","AM2302_GND");
+		sensors_pin_reset("IO14","AM2302_NC");
+		sensors_pin_reset("IO27","AM2302_SDA");
+		sensors_pin_reset("IO26","AM2302_VIN");
+	}
+	if(mode != 5){
+		sensors_pin_reset("IO12","DHT11_GND");
+		sensors_pin_reset("IO14","DHT11_NC");
+		sensors_pin_reset("IO27","DHT11_SDA");
+		sensors_pin_reset("IO26","DHT11_VIN");
 	}
 }
 
@@ -651,22 +657,37 @@ boolean sensors_init_I2C_HUM(int mode){
 			I2C_HUM_EN=0;
 		}
 	}
-	if( mode == 4 ||mode == 5){
+	if( mode == 4 ){
 		/*	AM2302	ESP
 			VIN		IO26
 			SDA		IO27
 			NC		IO14
 			GND		IO12
 		*/
-		if( sensors_pin_set("IO12","DHT11/22_GND") &&
-			sensors_pin_set("IO14","DHT11/22_NC") &&
-			sensors_pin_set("IO27","DHT11/22_SDA") &&
-			sensors_pin_set("IO26","DHT11/22_VIN")
+		if( sensors_pin_set("IO12","AM2302_GND") &&
+			sensors_pin_set("IO14","AM2302_NC") &&
+			sensors_pin_set("IO27","AM2302_SDA") &&
+			sensors_pin_set("IO26","AM2302_VIN")
 		){	pinMode(12,OUTPUT);	digitalWrite(12,LOW);
 			pinMode(14,INPUT_PULLDOWN);
-			pinMode(27,INPUT);
+			pinMode(27,INPUT_PULLUP);
 			pinMode(26,OUTPUT);	digitalWrite(26,HIGH);
-			if( i2c_dht_Setup( (6 - mode) * 11 )) I2C_HUM_EN = mode;
+			if( i2c_dht_Setup( 22 )) I2C_HUM_EN = 4;
+		}else{
+			ret = false;		// ピン干渉
+			I2C_HUM_EN=0;
+		}
+	}
+	if( mode == 5 ){
+		if( sensors_pin_set("IO12","DHT11_GND") &&
+			sensors_pin_set("IO14","DHT11_NC") &&
+			sensors_pin_set("IO27","DHT11_SDA") &&
+			sensors_pin_set("IO26","DHT11_VIN")
+		){	pinMode(12,OUTPUT);	digitalWrite(12,LOW);
+			pinMode(14,INPUT_PULLDOWN);
+			pinMode(27,INPUT_PULLUP);
+			pinMode(26,OUTPUT);	digitalWrite(26,HIGH);
+			if( i2c_dht_Setup( 11 )) I2C_HUM_EN = 5;
 		}else{
 			ret = false;		// ピン干渉
 			I2C_HUM_EN=0;
@@ -911,7 +932,7 @@ String sensors_get(){
 	}
 	if(AD_TEMP_EN>0){
 		float temp = mvAnalogIn(PIN_TEMP);
-		if( AD_TEMP_EN == 1){		// 1:LM61, 2:MCP9700, 3:AM2320, 4:AM2302, 5:DHT11
+		if( AD_TEMP_EN == 1){		// 1:LM61, 2:MCP9700
 			// V = 600 + 10*temp -> (temp-600)/10
 			temp /= 10.;                            // 温度(相対値)へ変換
 			temp += (float)TEMP_ADJ - 60.;             // 温度(相対値)へ変換
@@ -929,7 +950,7 @@ String sensors_get(){
 		sensors_S += "温度(℃)";
 		if(UDP_MODE & 1) sensors_sendUdp(sensors_devices[6], temp_S);
 	}
-	if(I2C_HUM_EN>0){		// 1:SHT31, 2:Si7021
+	if(I2C_HUM_EN>0){		// 1:SHT31, 2:Si7021, 3:AM2320, 4:AM2302, 5:DHT11
 		float temp = -999, hum = -999;
 		if( I2C_HUM_EN == 1){
 			if( !sensors_WireBegin && i2c_sht31_Setup(27,14) ) sensors_WireBegin=true;
