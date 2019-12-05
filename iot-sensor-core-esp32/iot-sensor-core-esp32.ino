@@ -426,8 +426,8 @@ void setup(){
 			break;
 		case 3:	// WIFI_AP_STA
 			WiFi.mode(WIFI_AP_STA);				// 無線LANを[AP+STA]モードに設定
-			setupWifiAp();
 			setupWifiSta();
+			setupWifiAp();
 			IP = WiFi.softAPIP();
 			IP_STA = WiFi.localIP();
 			IP_BC = (uint32_t)(WiFi.localIP()) | IPAddress(0,0,0,255);
