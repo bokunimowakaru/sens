@@ -33,7 +33,7 @@ volatile float _i2c_dht_temp = -999.;
 // DHTポートの初期化
 void _DHTInit(void) {
 	pinMode(DHTport,INPUT_PULLUP);
-	delay(250);
+	for(int i=0;i<100;i++) delay(10);	// 1秒 (推奨＝2秒)
 }
 
 // DHT TSシーケンス
@@ -42,6 +42,7 @@ byte _DHTTSSeq(void) {
 	int t=0;
 	// start condition
 	// 1. pull-down i/o pin from 18ms
+//	digitalWrite(DHTport, LOW);
 	pinMode(DHTport,OUTPUT);
 	digitalWrite(DHTport, LOW);
 	if(DHTtype==22) delayMicroseconds(1000);
@@ -52,18 +53,18 @@ byte _DHTTSSeq(void) {
 
 	dht11_in = digitalRead(DHTport);	// 正常時 = LOW
 	if(dht11_in){
-		Serial.println("dht start condition 1 not met");
+		Serial.println("DHT start condition 1 not met");
 		return 1;
 	}
 	delayMicroseconds(80);
 	dht11_in = digitalRead(DHTport);	// 正常時 = HIGH
 	if(!dht11_in){
-		Serial.println("dht start condition 2 not met");
+		Serial.println("DHT start condition 2 not met");
 		return 1;
 	}
 	while( digitalRead(DHTport) ){	// LOW待ち
 		if(t>100){
-			Serial.println("dht start DHTport no Signal");
+			Serial.println("DHT start DHTport no Signal");
 			return(1);
 		}
 		t++;
@@ -80,7 +81,7 @@ byte _read_dht11_dat(){
 	for(i=0; i< 8; i++){
 		while( !digitalRead(DHTport) ){ // High待ち
 			if(t>100){
-				Serial.println("dht no data");
+				Serial.println("DHT no data");
 				return 0;
 			}
 			t++;
@@ -92,7 +93,7 @@ byte _read_dht11_dat(){
 			result |=(1<<(7-i));
 			while( digitalRead(DHTport) ){ // wait '1' finish
 				if(t>100){
-					Serial.println("dht no finish data");
+					Serial.println("DHT no finish data");
 					return 0;
 				}
 				t++;
@@ -108,7 +109,7 @@ byte _DHT_ACK(void) {
 	int t=0;
 	while( digitalRead(DHTport) ){
 		if(t>100){
-			Serial.println("dht no ACK");
+			Serial.println("DHT no ACK");
 			return 0;
 		}
 		t++;
@@ -139,7 +140,7 @@ float i2c_dht_getTemp(){
 		if(_DHT_ACK()) return -999.;
 		dht11_check_sum = dht11_dat[0]+dht11_dat[1]+dht11_dat[2]+dht11_dat[3];
 		if(dht11_dat[4] == dht11_check_sum) break;
-		Serial.println("DHT11 checksum error");
+		Serial.println("DHT checksum error");
 	}
 	if(DHTtype==22){
 		_i2c_dht_temp = ((float)(dht11_dat[2]&0x7F)*256.+(float)dht11_dat[3])/10;
