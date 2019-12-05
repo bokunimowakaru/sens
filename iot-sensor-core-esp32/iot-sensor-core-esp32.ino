@@ -16,7 +16,7 @@ IoT Sensor Core for ESP32
 	Core Debug Level: なし
 */
 
-#define  VERSION "1.01"							// バージョン表示
+#define  VERSION "1.02"							// バージョン表示
 
 #include <SPIFFS.h>
 #include <WiFi.h>								// ESP32用WiFiライブラリ
@@ -364,15 +364,15 @@ void setup(){
 				//	d[1+16+16+17+65+1] >= '1' && d[1+16+16+17+65+1] <= '3'
 				){
 			*/
-					BOARD_TYPE= (byte)d[end] - '0';			Serial.printf("BOARD_TYPE  =%d\n",BOARD_TYPE);
+					BOARD_TYPE= (byte)d[end] - '0';			// Serial.printf("BOARD_TYPE  =%d\n",BOARD_TYPE);
 					end++;
-					strncpy(SSID_AP,d+end,16); end += 16;	Serial.printf("SSID_AP     =%s\n",SSID_AP);
-					strncpy(PASS_AP,d+end,16); end += 16;	Serial.printf("PASS_AP     =%s\n",PASS_AP);
-					strncpy(SSID_STA,d+end,17); end += 17;	Serial.printf("SSID_STA    =%s\n",SSID_STA);
+					strncpy(SSID_AP,d+end,16); end += 16;	// Serial.printf("SSID_AP     =%s\n",SSID_AP);
+					strncpy(PASS_AP,d+end,16); end += 16;	// Serial.printf("PASS_AP     =%s\n",PASS_AP);
+					strncpy(SSID_STA,d+end,17); end += 17;	// Serial.printf("SSID_STA    =%s\n",SSID_STA);
 					strncpy(PASS_STA,d+end,65); end += 65;	// Serial.printf("PASS_STA    =%s\n",PASS_STA);
-					WIFI_AP_MODE = (byte)d[end] - '0';		Serial.printf("WIFI_AP_MODE=%d\n",WIFI_AP_MODE);
+					WIFI_AP_MODE = (byte)d[end] - '0';		// Serial.printf("WIFI_AP_MODE=%d\n",WIFI_AP_MODE);
 					end++;
-					MDNS_EN = (byte)d[end] - '0';			Serial.printf("MDNS_EN=%d\n",MDNS_EN);
+					MDNS_EN = (byte)d[end] - '0';			// Serial.printf("MDNS_EN=%d\n",MDNS_EN);
 					end++;
 					// int sizeと char dでデータサイズを設定する
 					// ファイルの書き込みは html.ino
@@ -454,7 +454,7 @@ void setup(){
 		}
 	}
 	
-	// HTTP サーバ
+	// mDND サーバ Bonjour
 	if(MDNS_EN){
 	//	if( (WIFI_AP_MODE & 1) == 1 ){				// WiFi_AP 動作時
 			MDNS_EN=MDNS.begin("iot");
