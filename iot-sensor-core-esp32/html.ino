@@ -13,6 +13,8 @@
 
 WebServer server(80);							// Webサーバ(ポート80=HTTP)定義
 
+int32_t 	ip_num_ap;
+int32_t 	ip_num_sta;
 char 		html_ip_ui_s[16];
 char 		html_ip_num_s[16];
 char 		html_ip_mdns_s[16];
@@ -46,7 +48,8 @@ boolean html_check_overrun(int len){
 	Serial.print(len);
 	Serial.println(" bytes");
 	if(HTML_INDEX_LEN_MAX - 256 < len){
-		Serial.println("WARNING: No Enough Buffer");
+		Serial.print("WARNING: No Enough Buffer. Limit=");
+		Serial.print(HTML_INDEX_LEN_MAX);
 	}
 	if(HTML_INDEX_LEN_MAX - 1 <= len){
 		Serial.println("ERROR: Prevented HTML_INDEX Buffer Overrun");
@@ -106,13 +109,13 @@ void html_dataAttrSet(char *res_s){
 			Serial.println(MDNS_EN);
 		}
 	}
-	
+	/*
 	if(MDNS_EN && WIFI_AP_MODE == 3){
 		strcpy(html_ip_ui_s,html_ip_mdns_s);
 	}else{
 		strcpy(html_ip_ui_s,html_ip_num_s);
 	}
-	
+	*/
 	if(server.hasArg("WPS_STA")){
 		String S = server.arg("WPS_STA");
 		i = S.toInt();
@@ -438,6 +441,7 @@ void html_index(){
 	}
 	sensors_name().toCharArray(sensors_s,HTML_RES_LEN_MAX);
 	
+	char mode_s[4][7]={"OFF","AP","STA","AP+STA"};
 	snprintf(s, HTML_INDEX_LEN_MAX,
 		"<html>\
 			<head>\
@@ -446,7 +450,7 @@ void html_index(){
 				<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\
 			</head>\
 			<body>\
-				<h1>%s</h1>Ver.%s &emsp; IP=%s\
+				<h1>%s</h1>Ver.%s &emsp; mode=%s &emsp; IP=%s\
 				<hr>\
 				<h3>状態</h3>\
 					<p>%s</p>\
@@ -473,7 +477,7 @@ void html_index(){
 				<hr>\
 				<p>by bokunimo.net</p>\
 			</body>\
-		</html>", html_title, html_title,VERSION, html_ip_num_s, res_s, sensors_res_s, sensors_s, html_ip_ui_s, html_ip_ui_s
+		</html>", html_title, html_title,VERSION, mode_s[WIFI_AP_MODE], html_ip_num_s, res_s, sensors_res_s, sensors_s, html_ip_ui_s, html_ip_ui_s
 	);
 	server.send(200, "text/html", s);
 	html_check_overrun(strlen(s));
@@ -547,7 +551,7 @@ void html_wifi(){
 					</p>\
 				</form>\
 				<hr>\
-				<h3>スリープ設定</h3>\
+				<br><br><h3>スリープ設定</h3>\
 				<form method=\"GET\" action=\"/\">\
 					<input type=\"radio\" name=\"SLEEP_SEC\" value=\"0\" %s>OFF\
 					<input type=\"radio\" name=\"SLEEP_SEC\" value=\"25\" %s>30秒\
@@ -912,6 +916,31 @@ void html_reboot(){
 		} else Serial.println("SPIFSS ERROR");
 	}
 //	*/
+	
+	uint32_t ip;
+	switch(WIFI_AP_MODE){
+		case 1:
+			ip = ip_num_ap;
+			break;
+		case 2:
+			ip = ip_num_sta;
+			break;
+		case 3:
+			ip = ip_num_ap;
+			break;
+	}
+	sprintf(html_ip_num_s,"%d.%d.%d.%d",
+		ip & 255,
+		ip>>8 & 255,
+		ip>>16 & 255,
+		ip>>24
+	);
+	if( MDNS_EN ){
+		strcpy(html_ip_ui_s,html_ip_mdns_s);
+	}else{
+		strcpy(html_ip_ui_s,html_ip_num_s);
+	}
+	
 	snprintf(s, HTML_MISC_LEN_MAX,
 		"<html>\
 			<head>\
@@ -925,9 +954,10 @@ void html_reboot(){
 				<p>しばらくおまちください(約15秒)</p>\
 				<p>STAモードに切り替えたときは,LAN側からアクセスしてください</p>\
 				<p>接続できないときはスマートフォンのWi-Fi接続先を確認してください</p>\
-				<p><a href=\"http://%s/\">http://%s/</a></p>\
+				<p>IP：<br><a href=\"http://%s/\">http://%s/</a></p>\
+				<p>mDNS：<br><a href=\"http://%s/\">http://%s/</a></p>\
 			</body>\
-		</html>", html_ip_mdns_s, html_ip_num_s, html_ip_num_s
+		</html>", html_ip_ui_s, html_ip_num_s, html_ip_num_s, html_ip_mdns_s, html_ip_mdns_s
 	);
 	server.send(200, "text/html", s);
 	html_check_overrun(strlen(s));
@@ -1135,6 +1165,8 @@ String html_ipAdrToString(uint32_t ip){
 }
 
 void html_init(const char *domainName_local, uint32_t ip, int32_t ip_ap, int32_t ip_sta){
+	ip_num_ap = ip_ap;
+	ip_num_sta = ip_sta;
 	snprintf(html_ip_mdns_s,16,"%s.local",
 		domainName_local
 	);
@@ -1172,4 +1204,5 @@ void html_init(const char *domainName_local, uint32_t ip, int32_t ip_ap, int32_t
 
 void html_handleClient(){
 	server.handleClient();
+	yield();
 }

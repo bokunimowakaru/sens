@@ -1,4 +1,4 @@
-# IoT Sensor Core ESP32 by Wataru KUNINO  
+﻿# IoT Sensor Core ESP32 by Wataru KUNINO  
 
 ESP32-WROOM-32モジュールに対応した汎用のIoTセンサ機器向けプログラムです。  
 - スマートフォンやパソコンから設定を行うことが出来ます。  
@@ -79,7 +79,7 @@ Wi-Fi設定の「Wi-Fi再起動」の[保存]にタッチすると、現在のWi
 * 赤外線リモコン受信：赤外線リモコン信号を受信すると、そのコードを取得します  
 * 照度センサ：新日本無線 NJL7502L に対応
 * 温度センサ：TI LM61 や Microchip MCP9700 に対応
-* 温湿度センサ：Sensirion SHT31や Silicon Labs Si7021、ASONG AM2320 AM2302 DHT11などに対応
+* 温湿度センサ：Sensirion SHT31や Silicon Labs Si7021、ASONG AM2320、 AM2302 (DHT22) 、 DHT11 などに対応
 * 環境センサ：Bosch BME280 BMP280に対応
 * 加速度センサ：Analog Devices ADXL345に対応
 * LED：汎用品に対応
@@ -151,6 +151,7 @@ Arduino IDEを使って、開発途上版を自分でコンパイルして使用
 		2019/04/14 α２版の公開  
 		2019/06/25 β版の公開（書籍投稿用）  
 		2019/11/25 Ver. 1.00 正式版リリース（エレキジャックIoT用）  
+		2019/12/06 Ver. 1.03 湿度センサ3種追加、バグ修正 
 
 ## ライセンス(全般)
 
