@@ -18,6 +18,17 @@ IoT Sensor Core for ESP32
 
 #define  VERSION "1.03"							// バージョン表示
 
+/*	ToDo Ver1.10までに
+
+ - 初期設定ウィザード
+ - デバイス発見用 ブロードキャスト ident_0 送信
+ - ASONG HR202L 対応
+ - Language 設定
+ - ライセンス表示・バイナリによる再配布対応
+ - Windows版 インストール説明書の作成 (Espressif DOWNLOAD TOOL使用)
+
+*/
+
 #include <SPIFFS.h>
 #include <WiFi.h>								// ESP32用WiFiライブラリ
 #include <WiFiUdp.h>							// UDP通信を行うライブラリ
