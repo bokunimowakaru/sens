@@ -64,10 +64,10 @@ uint16_t i2c_sht31_getStat(){
 	Wire.write(0x2D);
 	if( Wire.endTransmission() == 0){
 		Wire.requestFrom(I2C_sht,3);
-		if(Wire.available()==0) return -999.;
+		if(Wire.available()==0) return 0xFFFF;
 		stat = (uint16_t)Wire.read();
 		stat <<= 8;
-		if(Wire.available()==0) return -999.;
+		if(Wire.available()==0) return 0xFFFF;
 		stat += (uint16_t)Wire.read();
 		Wire.read();
 	}

@@ -16,9 +16,13 @@ IoT Sensor Core for ESP32
 	Core Debug Level: なし
 */
 
-#define  VERSION "1.03"							// バージョン表示
+#define  VERSION "1.04"							// バージョン表示
 
-/*	ToDo Ver1.10までに
+/*	Ver 1.04
+ - SSIDにMAC下4桁を追加する機能(教室などで複数のIoT SensorCoreを利用する場合を想定)
+
+
+// ToDo Ver1.10までに
 
  - 初期設定ウィザード
  - デバイス発見用 ブロードキャスト ident_0 送信
@@ -44,6 +48,7 @@ RTC_DATA_ATTR char SSID_AP[16]="iot-core-esp32";	// 本機のSSID 15文字まで
 RTC_DATA_ATTR char PASS_AP[16]="password";			// 本機のPASS 15文字まで
 RTC_DATA_ATTR char 		SSID_STA[17] = "";		// STAモードのSSID(お手持ちのAPのSSID)
 RTC_DATA_ATTR char 		PASS_STA[65] = "";		// STAモードのPASS(お手持ちのAPのPASS)
+RTC_DATA_ATTR boolean	SSID_MAC	= false;	// SSIDにMACを付与
 RTC_DATA_ATTR boolean	WPS_STA		= false;	// STAモードのWPS指示
 RTC_DATA_ATTR byte 		BOARD_TYPE	= 1;		// 0:AE-ESP, 1:DevKitC, 2:TTGO T-Koala
 RTC_DATA_ATTR boolean	MDNS_EN=true;			// MDNS responder
@@ -86,6 +91,7 @@ RTC_DATA_ATTR boolean	I2C_ACCEM_EN=false;
 RTC_DATA_ATTR boolean	TIMER_EN=false;
 
 IPAddress IP;									// 本機IPアドレス
+byte MAC[6];									// 本機MACアドレス
 const IPAddress IP_AP=IPAddress(192,168,254,1);	// AP用IPアドレス
 IPAddress IP_STA;								// STA用IPアドレス
 IPAddress IP_BC;								// ブロードキャストIPアドレス
@@ -116,7 +122,10 @@ boolean setupWifiAp(){
 			IPAddress(255,255,255,0)			// ネットマスク
 		);
 		for(int i=0;i<500;i++) delay(1);		// 待ち時間が必要(起動後HUP対策)
-		ret = WiFi.softAP(SSID_AP,PASS_AP);		// ソフトウェアAPの起動
+		char s[22];
+		if( SSID_MAC ) sprintf(s,"%s-%02x%02x",SSID_AP,MAC[4],MAC[5]);
+		else strcpy(s,SSID_AP);
+		ret = WiFi.softAP(s,PASS_AP);		// ソフトウェアAPの起動
 		if(ret){
 			IPAddress ip = WiFi.softAPIP();
 			Serial.print("SoftAP  IP = "); Serial.println(ip);
@@ -299,6 +308,7 @@ String sendSensorValues(){
 }
 
 void setup(){
+	esp_efuse_mac_get_default(MAC);
 	pinMode(0,INPUT_PULLUP);
 	sensors_init();
 	Serial.begin(115200);
@@ -377,8 +387,8 @@ void setup(){
 
 		File file = SPIFFS.open(FILENAME,"r");	// ファイルを開く
 		if(file){
-			int size = 1 + 16 + 16 + 17 + 65 + 1 + 1;
-			char d[(1 + 16 + 16 + 17 + 65 + 1) + 1 + 1];
+			int size = 1 + 16 + 16 + 17 + 65 + 1 + 1 + 1;
+			char d[(1 + 16 + 16 + 17 + 65 + 1 + 1 + 1) + 1];
 			int end = 0;
 			memset(d,0,size + 1);
 			if(file.available()){
@@ -404,6 +414,8 @@ void setup(){
 					end++;
 					MDNS_EN = (byte)d[end] - '0';			// Serial.printf("MDNS_EN=%d\n",MDNS_EN);
 					end++;
+					SSID_MAC = (byte)d[end] - '0';			// Serial.printf("SSID_MAC=%d\n",SSID_MAC);
+					end++;
 					// int sizeと char dでデータサイズを設定する
 					// ファイルの書き込みは html.ino
 			//	}
@@ -422,13 +434,15 @@ void setup(){
 		strcpy(PASS_AP,"password");
 	}
 //	*/
+	Serial.printf("MAC Address= %02x:%02x:%02x:%02x:%02x:%02x\r\n", MAC[0], MAC[1], MAC[2], MAC[3], MAC[4], MAC[5]);
 	Serial.print("Wi-Fi Mode = ");
 	char mode_s[4][7]={"OFF","AP","STA","AP+STA"};
 	Serial.println( mode_s[WIFI_AP_MODE] );
 	
 	if( (WIFI_AP_MODE & 1) == 1){
-		Serial.println("SSID_AP    = " + String(SSID_AP) );
-		Serial.println("PASS_AP    = " + String(PASS_AP) );
+		Serial.print("SSID_AP    = " + String(SSID_AP) );
+		if(SSID_MAC) Serial.printf("-%02x%02x",MAC[4],MAC[5]);
+		Serial.println("\r\nPASS_AP    = " + String(PASS_AP) );
 	}
 	if( (WIFI_AP_MODE & 2) == 2){
 		if(strlen(SSID_STA)>0)Serial.println("SSID_STA   = " + String(SSID_STA) );
