@@ -46,7 +46,8 @@ byte _DHTTSSeq(void) {
 	pinMode(DHTport,OUTPUT);
 	digitalWrite(DHTport, LOW);
 	if(DHTtype==22) delayMicroseconds(1000);
-	else delay(20);	//  Host start signal pull down time > 18 ms
+	else delay(30);	//  Host start signal pull down time > 18 ms (20msでは足りなかった）
+	digitalWrite(DHTport, HIGH);
 	pinMode(DHTport,INPUT_PULLUP);
 	if(DHTtype==22)	delayMicroseconds(30+40);	// High 30us + Slave ACK 80us/2
 	else 			delayMicroseconds(20+40);	// High 20us + Slave ACK 80us/2
