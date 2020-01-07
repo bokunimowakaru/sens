@@ -16,11 +16,15 @@ IoT Sensor Core for ESP32
 	Core Debug Level: なし
 */
 
-#define  VERSION "1.04"							// バージョン表示
+#define  VERSION "1.05"							// バージョン表示
 
-/*	Ver 1.04
+/*
+Ver. 1.05
+ - 湿度センサDHT11の個体ばらつきによって起動が不安定ものがあったので改善（エラーは無くならない）
+ - 30を超えるスリープが設定できないバグを修正（uint変換に誤り）
+
+Ver. 1.04
  - SSIDにMAC下4桁を追加する機能(教室などで複数のIoT SensorCoreを利用する場合を想定)
-
 
 // ToDo Ver1.10までに
 
