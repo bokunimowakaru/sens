@@ -1,6 +1,8 @@
 /*******************************************************************************
 IoT Sensor Core for ESP32
 
+https://github.com/bokunimowakaru/sens
+
 										   Copyright (c) 2019 Wataru KUNINO
 *******************************************************************************/
 
@@ -18,24 +20,25 @@ IoT Sensor Core for ESP32
 
 #define  VERSION "1.05"							// バージョン表示
 
-/*
+/*******************************************************************************
+Ver. 1.06
+ - Windows版 インストール説明書の作成 (Espressif DOWNLOAD TOOL使用)
+ - デバイス発見用 ブロードキャスト ident_0 送信
+
 Ver. 1.05
  - 湿度センサDHT11の個体ばらつきによって起動が不安定ものがあったので改善（エラーは無くならない）
- - 30を超えるスリープが設定できないバグを修正（uint変換に誤り）
+ - 30分を超えるスリープが設定できないバグを修正（uint変換に誤り）
 
 Ver. 1.04
  - SSIDにMAC下4桁を追加する機能(教室などで複数のIoT SensorCoreを利用する場合を想定)
 
-// ToDo Ver1.10までに
-
+ToDo
  - 初期設定ウィザード
- - デバイス発見用 ブロードキャスト ident_0 送信
  - ASONG HR202L 対応
  - Language 設定
  - ライセンス表示・バイナリによる再配布対応
- - Windows版 インストール説明書の作成 (Espressif DOWNLOAD TOOL使用)
 
-*/
+*******************************************************************************/
 
 #include <SPIFFS.h>
 #include <WiFi.h>								// ESP32用WiFiライブラリ
@@ -254,9 +257,9 @@ boolean setupWifiSta(){
 	return true;
 }
 
-String sendUdp(String &payload){
+String sendUdp(const char *device, String &payload){
 	if(UDP_PORT > 0 && payload.length() > 0){
-		String S = String(DEVICE) + "_" + String(DEVICE_NUM) + "," + payload;
+		String S = String(device) + "_" + String(DEVICE_NUM) + "," + payload;
 		WiFiUDP udp;								// UDP通信用のインスタンスを定義
 		udp.beginPacket(IP_BC, UDP_PORT);			// UDP送信先を設定
 		DEVICE[5]='\0';								// 終端
@@ -268,6 +271,10 @@ String sendUdp(String &payload){
 		delay(10);
 		return S;
 	} else return "";
+}
+
+String sendUdp(String &payload){
+	return sendUdp(DEVICE, payload);
 }
 
 boolean sentToAmbient(String &payload){
@@ -520,7 +527,12 @@ void setup(){
 	Serial.print("   URL(IP) = http://");
 	Serial.print(IP);
 	Serial.println("/");
+	
+	// 起動時の送信
+	String ip_S = String(IP[0])+","+String(IP[1])+","+String(IP[2])+","+String(IP[3]);
+	sendUdp("ident",ip_S);
 	sendSensorValues();
+	
 	TIME_NEXT = millis() + (unsigned long)SEND_INT_SEC * 1000;
 	// Wi-Fi スリープ間隔180秒超過(10分以上を設定)、または 起動回数 360回超過(30秒間隔で3時間)で即sleep
 	if(SLEEP_SEC > 180 || TimerWakeUp_bootCount() > 360) sleep();
