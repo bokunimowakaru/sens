@@ -37,11 +37,18 @@ ESP32-WROOM-32モジュール用の IoT センサ機器向けプログラムで�
 [^1]: IoT Sensor Core ファームウェアを書き込むために使用します。書き込み済の IoT Sensor Core をお持ちの場合は不要です。  
 [^2]: ESP32マイコンへの電源供給とファームウェアの書き込みに使用します。パソコンや Raspberry Pi をお持ちでない場合は、USB出力のACアダプタが必要です。  
 
-## インストール方法
+## インストール方法 【Windowsを使用する場合】
+
+ファームウェアの書き込みツール Flash Download Tools を使用して、ESP32-WROOM-32に書き込むことができます。  
+詳しくは、[ドキュメント](https://raw.githubusercontent.com/bokunimowakaru/sens/master/README.pdf)をご覧ください。  
+
+		https://raw.githubusercontent.com/bokunimowakaru/sens/master/README.pdf
+
+## インストール方法 【Rasberry Piを使用する場合】
 
 IoT Sensor Core を ESP32-WROOM-32に書き込むには、bash、gitツール、pythonが動作する環境（Raspberry Pi、Windows 10 + Cygwinで動作確認済み）が必要です。
 
-* 下記のコマンドでダウンロードしてください。  
+* 下記のコマンドで IoT Sensor Core をダウンロードしてください。  
 
 		git clone https://github.com/bokunimowakaru/sens
 
