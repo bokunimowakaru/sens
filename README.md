@@ -40,8 +40,9 @@ ESP32-WROOM-32モジュール用の IoT センサ機器向けプログラムで�
 ## インストール方法 【Windowsを使用する場合】
 
 ファームウェアの書き込みツール Flash Download Tools を使用して、ESP32-WROOM-32に書き込むことができます。  
-詳しくは、[ドキュメント](https://raw.githubusercontent.com/bokunimowakaru/sens/master/README.pdf)をご覧ください。  
+詳しくは、[インストール説明書](https://raw.githubusercontent.com/bokunimowakaru/sens/master/README.pdf)をご覧ください。  
 
+		インストール説明書(PDF)
 		https://raw.githubusercontent.com/bokunimowakaru/sens/master/README.pdf
 
 ## インストール方法 【Rasberry Piを使用する場合】
