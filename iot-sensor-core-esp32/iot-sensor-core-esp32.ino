@@ -328,11 +328,11 @@ void setup(){
 	int sw = 1;
 	if(BTN_EN > 0){
 		pinMode(PIN_SW,INPUT_PULLUP);
-		if(wake == 1 || wake == 2){
+		if(wake == 1 || wake == 2){		// RTC_IO, RTC_CNTL
 			sensors_btnPush(true);
 			sw = 0;
 		}
-		if(wake == 3 || wake == 4){
+		if(wake == 3 || wake == 4){		// timer, touchpad
 			sw = digitalRead(PIN_SW);
 		}
 	}
@@ -340,7 +340,7 @@ void setup(){
 		pinMode(PIN_IR_IN,INPUT_PULLUP);
 		pinMode(PIN_GND,OUTPUT);	digitalWrite(PIN_GND,LOW);
 		pinMode(PIN_VDD,OUTPUT);	digitalWrite(PIN_VDD,HIGH);
-		if(wake == 1 || wake == 2){
+		if(wake == 1 || wake == 2){		// RTC_IO, RTC_CNTL
 			if( sw ){
 				sw = digitalRead(PIN_IR_IN);
 				if( !sw ) sw = !sensors_irRead(true);
@@ -351,11 +351,11 @@ void setup(){
 		pinMode(PIN_PIR,INPUT_PULLUP);
 		pinMode(PIN_GND,OUTPUT);	digitalWrite(PIN_GND,LOW);
 		pinMode(PIN_VDD,OUTPUT);	digitalWrite(PIN_VDD,HIGH);
-		if(wake == 1 || wake == 2){
+		if(wake == 1 || wake == 2){		// RTC_IO, RTC_CNTL
 			sensors_pirPush(true);
 			sw = 0;
 		}
-		if(wake == 3 || wake == 4){
+		if(wake == 3 || wake == 4){		// timer, touchpad
 			if( sw ) sw = !digitalRead(PIN_PIR);
 		}
 	}
@@ -529,9 +529,11 @@ void setup(){
 	Serial.println("/");
 	
 	// 起動時の送信
-	String ip_S = String(IP[0])+","+String(IP[1])+","+String(IP[2])+","+String(IP[3]);
-	sendUdp("ident",ip_S);
-	sendSensorValues();
+	if( wake == 0 ){
+		String ip_S = String(IP[0])+","+String(IP[1])+","+String(IP[2])+","+String(IP[3]);
+		sendUdp("ident",ip_S);
+		sendSensorValues();
+	}
 	
 	TIME_NEXT = millis() + (unsigned long)SEND_INT_SEC * 1000;
 	// Wi-Fi スリープ間隔180秒超過(10分以上を設定)、または 起動回数 360回超過(30秒間隔で3時間)で即sleep
