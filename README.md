@@ -1,4 +1,4 @@
-﻿# IoT Sensor Core ESP32 by Wataru KUNINO  
+# IoT Sensor Core ESP32 by Wataru KUNINO  
 
 ESP32-WROOM-32モジュール用の IoT センサ機器向けプログラムです。  
 
@@ -55,7 +55,11 @@ IoT Sensor Core を ESP32-WROOM-32に書き込むには、bash、gitツール、
 
 * ESP32開発ボードを パソコンまたは Raspberry Pi の USB へ接続してください。  
 
-* 下記のコマンドを入力するとESP32へ書き込むことが出来ます 。複数のUSBシリアル変換器を使用している場合は、第1引数にシリアルポート（/dev/ttyUSB0や/dev/ttyS2など）を追加してください。
+* 下記のコマンドでUSBシリアルのデバイスPath(/dev/ttyUSB*、「*」は数字)を確認してください。表示されないときはUSB接続をやり直してください。  
+
+		ls -l /dev/serial/by-id/
+
+* 下記のコマンドを入力するとESP32へ書き込むことが出来ます 。複数のUSBシリアル変換器を使用している場合は、第1引数にシリアルポート（/dev/ttyUSB0や/dev/ttyS2など）を追加してください。  
 
 		cd ~/sens/target  
 		./iot-sensor-core-esp32.sh  
@@ -173,6 +177,8 @@ Arduino IDEを使って、開発途上版を自分でコンパイルして使用
 		2019/06/25 β版の公開（書籍投稿用）  
 		2019/11/25 Ver. 1.00 正式版リリース（エレキジャックIoT用）  
 		2019/12/06 Ver. 1.03 湿度センサ3種追加、バグ修正 
+		2020/01/13 Ver. 1.05 SSIDにMAC下4桁を追加する機能  
+		(教室などで複数のIoT SensorCoreを利用する場合を想定)  
 
 ## サポートサイト
 
@@ -195,4 +201,4 @@ Arduino IDEを使って、開発途上版を自分でコンパイルして使用
 * 当方が作成した（もしくは追加した）ソフトウェア以外については、作成者の権利を優先します。  
 * 提供情報や配布ソフトによって、被害が生じた場合であっても、当方は、一切、補償いたしません。  
 
-	Copyright (c) 2016-2019 Wataru KUNINO <https://bokunimo.net/>  
+	Copyright (c) 2016-2020 Wataru KUNINO <https://bokunimo.net/>  
