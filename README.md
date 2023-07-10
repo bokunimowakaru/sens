@@ -182,7 +182,7 @@ Arduino IDEを使って、開発途上版を自分でコンパイルして使用
 		2020/01/13 Ver. 1.05 SSIDにMAC下4桁を追加する機能  
 		（教室などで複数のIoT SensorCoreを利用する場合を想定）  
 		2023/07/10 Ver. 1.08 HTU21D(Si7021を選択)に暫定対応  
-  		（[参考情報・温湿度センサ Si7021 と HTU21D の見分け方](https://bokunimo.net/blog/esp/3797/)）
+  		[参考情報・温湿度センサ Si7021 と HTU21D の見分け方](https://bokunimo.net/blog/esp/3797/)  
 
 ## サポートサイト
 
