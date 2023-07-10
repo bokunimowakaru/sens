@@ -21,7 +21,7 @@ ESP32-WROOM-32モジュール用の IoT センサ機器向けプログラムで�
 * 赤外線リモコン受信：赤外線リモコン信号を受信すると、そのコードを取得します  
 * 照度センサ：新日本無線 NJL7502L に対応
 * 温度センサ：TI LM61 や Microchip MCP9700 に対応
-* 温湿度センサ：Sensirion SHT31や Silicon Labs Si7021、ASONG AM2320、 AM2302 (DHT22) 、 DHT11 などに対応
+* 温湿度センサ：Sensirion SHT31や Silicon Labs Si7021、(HTU21D)、ASONG AM2320、AM2302 (DHT22) 、DHT11 などに対応
 * 環境センサ：Bosch BME280 BMP280に対応
 * 加速度センサ：Analog Devices ADXL345に対応
 * LED：汎用品に対応
